@@ -1,0 +1,30 @@
+pipeline {
+    agent any
+    environment {
+        git_repo_url = "https://github.com/vbilahaniya/simple-java-maven-app.git"
+        git_repo_br = "feature4"
+    }
+    stages{
+        stage("Checkout"){
+            steps {
+                // Clean before build
+                cleanWs()
+                git url: "${git_repo_url}", branch: "${git_repo_br}"
+            }
+        }
+        // stage("printEnv"){
+        //     steps {
+        //         sh "printenv"
+        //     }
+        // }
+        stage("Build Source Code"){
+            steps {
+                
+                dir('sonarqube-scanner-maven/maven-basic') {
+                    sh "mvn install"
+                    sh "mv target/*.jar target/sonarscanner-maven-basic-1.0-SNAPSHOT-${BUILD_NUMBER}.jar"
+                }
+            }
+        }
+    }
+}
